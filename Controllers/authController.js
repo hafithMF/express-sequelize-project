@@ -11,7 +11,7 @@ const {
 // Membuat sebuah register controller
 async function register(req, res) {
   try {
-    const { username, email, password } = req.body;
+    const { name, email, password } = req.body;
     // Check if user already exists
     const existingUser = await users.findOne({ where: { email } });
     if (existingUser) {
@@ -23,14 +23,14 @@ async function register(req, res) {
 
     // Create new user
     const newUser = await users.create({
-      username,
+      name,
       email,
       password: hashedPassword
     });
 
     const userResponse = {
       id: newUser.id,
-      username: newUser.username,
+      name: newUser.name,
       email: newUser.email,
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt
@@ -38,6 +38,7 @@ async function register(req, res) {
 
     successResponse(res, 'User registered successfully', userResponse, 201);
   } catch (error) {
+    console.error(error)
     internalErrorResponse(res, error);
   }
 };
@@ -60,7 +61,7 @@ async function login(req, res) {
 
     const userResponse = {
       id: user.id,
-      username: user.username,
+      name: user.name,
       email: user.email,
     };
 
@@ -78,7 +79,7 @@ async function login(req, res) {
 async function me(req, res) {
   try {
     const user = await users.findByPk(req.user.id, {
-      attributes: ['id', 'username', 'email']
+      attributes: ['id', 'name', 'email']
     });
     if (!user) {
       errorResponse(res, 'User not found', 404);
